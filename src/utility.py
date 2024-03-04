@@ -1,5 +1,6 @@
 import time
 import threading
+import random
 
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright, Page
@@ -22,9 +23,11 @@ class PageInteraction:
     
 class ScraperWorker:
 
-    def __init__(self, start_urls, worker_number, headless):
+    def __init__(self, start_urls, worker_number, headless, user_agent):
+
         self.worker_number = worker_number
         self.headless = headless
+        self.user_agent = user_agent
         
         if isinstance(start_urls, list):
             self.undivided_input_list = start_urls
@@ -55,7 +58,17 @@ class ScraperWorker:
         try:
             with sync_playwright() as p:
                 browser = p.chromium.launch(headless=self.headless)
-                context = browser.new_context()
+
+                if isinstance(self.user_agent, list):
+                    user_agent = random.choice(self.user_agent)
+                else:
+                    user_agent = self.user_agent
+                
+                if user_agent:
+                    context = browser.new_context(user_agent=user_agent)
+                else:
+                    context = browser.new_context()
+
                 page = context.new_page()
 
                 pi = PageInteraction(page)

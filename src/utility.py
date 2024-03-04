@@ -25,6 +25,9 @@ class ScraperWorker:
 
     def __init__(self, start_urls, worker_number, headless, user_agent):
 
+        if not isinstance(user_agent, (list, str)):
+            raise TypeError("user_agent should be a list or a string.")
+
         self.worker_number = worker_number
         self.headless = headless
         self.user_agent = user_agent
